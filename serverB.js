@@ -2,7 +2,7 @@ console.log('Hola');
 
 var express = require('express');
 var app = express();
-var PUERTO = 3000;
+var PUERTO = 3777;
 
 app.listen(PUERTO, function(){
 	console.log('API corriendo en el puerto: ' + PUERTO);
@@ -44,14 +44,44 @@ app.post('/api/insertar', function(req, res){
 	
 	pg.connect(URL, function(err, client, done){
 		if (err){
+			res.send('Error :(');
 			return console.log('Error de conexión');
 		}
 		client.query(queryInsertar, function(err, result){
 			if(err){
+				res.send('Error :(');
+				client.end();
 				return console.log('Error en el query');
 			}
 			console.log('Se insertó');
+			res.send('OK c:');
 			client.end();
 		});
 	});
+});
+
+app.get('/api/obtener',  function(req, res) {
+        var cedula = req.query.cedula;
+        var queryObtener = 'SELECT * FROM SALDO WHERE cedula = ' 
+				+ cedula + ';';
+        console.log(queryObtener);
+
+        pg.connect(URL, function(err, client, done) {
+                if(err) {
+                        res.send('Error :(')
+                        return console.log('Error de conexión');
+                }
+                 var query = client.query(queryObtener, function(err, result) {
+                        if(err) {
+                                res.send('Error :(')
+				client.end();
+                                return console.log('Error en el query');
+                                }
+                        console.log('Se hizo la consulta!');
+                        client.end();
+                        });
+                query.on('row', function(row){
+				return res.json(row);
+			});
+		});
 });
