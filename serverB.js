@@ -68,12 +68,10 @@ app.get('/api/obtener',  function(req, res) {
 
         pg.connect(URL, function(err, client, done) {
                 if(err) {
-                        res.send('Error :(')
                         return console.log('Error de conexión');
                 }
                  var query = client.query(queryObtener, function(err, result) {
                         if(err) {
-                                res.send('Error :(')
 				client.end();
                                 return console.log('Error en el query');
                                 }
